@@ -154,7 +154,7 @@ export default function ReviewsList() {
       <tbody>
         {filteredReviews.map((review) => {
           return (
-            <tr>
+            <tr key={review.id}>
               <td scope="row">{review.name}</td>
               <td>{review.text}</td>
               <td>{review.vote}</td>
