@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import ReviewsList from "../components/ReviewsList";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import ReviewForm from "../components/ReviewForm";
 
 export default function MovieShowPage() {
   const { id } = useParams();
@@ -21,7 +22,23 @@ export default function MovieShowPage() {
       });
   };
 
+  const [reviews, setReviews] = useState([]);
+
+  const fetchReviews = () => {
+    axios
+      .get(`http://localhost:3000/movies/${id}/reviews`)
+      .then((res) => setReviews(res.data.data))
+      .catch((err) =>
+        console.error("Errore nel caricamento delle recensioni:", err)
+      );
+  };
+
   useEffect(fetchMovies, []);
+
+  useEffect(() => {
+    fetchMovies();
+    fetchReviews();
+  }, []);
 
   const movie = movies.find((m) => m.id === Number(id));
 
@@ -50,7 +67,9 @@ export default function MovieShowPage() {
         </div>
       </div>
       <h2>Lista recensioni</h2>
-      <ReviewsList movieId={Number(id)} />
+      <ReviewsList movieId={Number(id)} reviews={reviews} />
+
+      <ReviewForm onReviewAdded={fetchReviews} />
     </div>
   );
 }
