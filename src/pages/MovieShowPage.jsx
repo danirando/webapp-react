@@ -3,22 +3,24 @@ import ReviewsList from "../components/ReviewsList";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ReviewForm from "../components/ReviewForm";
+import { useLoader } from "../contexts/LoaderContext";
 
 export default function MovieShowPage() {
+  const { setIsLoading } = useLoader();
   const { id } = useParams();
   const [movies, setMovies] = useState([]);
-  const [loading, setLoading] = useState(true); // stato aggiuntivo
 
   const fetchMovies = () => {
+    setIsLoading(true);
     axios
       .get("http://localhost:3000/movies")
       .then((res) => {
         setMovies(res.data.data);
-        setLoading(false);
+        setIsLoading(false);
       })
       .catch((err) => {
         console.error("Errore nel caricamento dei film:", err);
-        setLoading(false);
+        setIsLoading(false);
       });
   };
 
@@ -27,13 +29,13 @@ export default function MovieShowPage() {
   const fetchReviews = () => {
     axios
       .get(`http://localhost:3000/movies/${id}/reviews`)
-      .then((res) => setReviews(res.data.data))
-      .catch((err) =>
-        console.error("Errore nel caricamento delle recensioni:", err)
-      );
+      .then((res) => {
+        setReviews(res.data.data);
+      })
+      .catch((err) => {
+        console.error("Errore nel caricamento delle recensioni:", err);
+      });
   };
-
-  useEffect(fetchMovies, []);
 
   useEffect(() => {
     fetchMovies();
@@ -42,7 +44,6 @@ export default function MovieShowPage() {
 
   const movie = movies.find((m) => m.id === Number(id));
 
-  if (loading) return <p>Caricamento in corso...</p>;
   if (!movie) return <p>Film non trovato.</p>;
 
   return (

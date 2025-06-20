@@ -2,21 +2,24 @@ import { useParams } from "react-router-dom";
 import Card from "../components/Card";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useLoader } from "../contexts/LoaderContext";
+
 export default function HomePage() {
+  const { setIsLoading } = useLoader();
   const { id } = useParams();
   const [movies, setMovies] = useState([]);
-  const [loading, setLoading] = useState(true); // stato aggiuntivo
 
   const fetchMovies = () => {
+    setIsLoading(true);
     axios
       .get("http://localhost:3000/movies")
       .then((res) => {
         setMovies(res.data.data);
-        setLoading(false);
+        setIsLoading(false);
       })
       .catch((err) => {
         console.error("Errore nel caricamento dei film:", err);
-        setLoading(false);
+        setIsLoading(false);
       });
   };
 
